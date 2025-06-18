@@ -1,18 +1,17 @@
 import express from 'express';
-import { createServer } from 'http';
-import { Server } from 'socket.io';
+import {createServer} from 'http';
+import {Server} from 'socket.io';
 
 const app = express();
 const httpServer = createServer(app);
 
-const messages: any[] = [
-];
+const messages: any[] = [];
 
 const usersState = new Map();
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "*" // Настройте правильно для продакшена!
+        origin: '*' // Настройте правильно для продакшена!
     }
 });
 
@@ -38,24 +37,25 @@ io.on('connection', (socketChannel) => {
         user.name = name;
     });
     socketChannel.on('client-typed', () => {
-        io.emit('user-typing',usersState.get(socketChannel));
+        io.emit('user-typing', usersState.get(socketChannel));
     });
 
     socketChannel.on('client-message-sent', (message: string) => {
         if (typeof message !== 'string') {
-        return;
+            return;
         }
         const user = usersState.get(socketChannel);
         let newMessage = {
             message: message, id: new Date().getTime(),
-            user: {id: user.id, name: user.name}};
+            user: {id: user.id, name: user.name}
+        };
         messages.push(newMessage);
         io.emit('new-message-sent', newMessage);
     });
 
 });
 
-const PORT = process.env.PORT || 3009;
+const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
