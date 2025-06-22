@@ -15,10 +15,13 @@ const io = new Server(httpServer, {
     }
 });
 
+//После инициализации бека, выводится строка.
 app.get('/', (_req, res) => {
     res.send('<h1>Socket.IO Server</h1>');
 });
 
+
+//После подписки на канал, вторым аргументом идёт функция, c непосредственно socketChannel, с которым мы в дальнейшем взаимодействуем
 io.on('connection', (socketChannel) => {
     console.log('New client connected:', socketChannel.id);
     socketChannel.emit('init-messages-published', messages)
@@ -27,6 +30,7 @@ io.on('connection', (socketChannel) => {
         usersState.delete(socketChannel);
     });
 
+    //По умолчанию пользователь anonymous, но как пользователь вводит имя, обращаемся через get и получаем юзера, после чего заменяем имя.
     usersState.set(socketChannel, {id: new Date().getTime().toString(), name: 'anonymous'});
 
     socketChannel.on('client-name-sent', (name: string) => {
